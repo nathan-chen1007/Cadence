@@ -2,6 +2,7 @@
 #include "csv.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "dca.h"
 
 int main(void) {
     struct Bar* bars = NULL; 
@@ -10,6 +11,13 @@ int main(void) {
         fprintf(stderr, "CSV read failed\n");
         return 1;
     }
-    printf("%zu\n", count);
+    struct RunResult result;
+    simulateDCA(bars, 0, 5, 2, 100, &result);
+    printf("Total Invested: %f\n", result.totalInvested);
+    printf("Number of buys: %zu\n", result.numBuys);
+    printf("Total Shares: %f\n", result.totalShares);
+    printf("Value of assets: %f\n", result.finalValue);
+    printf("Average cost per share: %f\n", result.avgCostPerShare);
+    printf("Rate of return: %f\n", result.rateOfReturn);
     free(bars);
 }
