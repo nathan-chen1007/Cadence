@@ -20,5 +20,9 @@ struct RunResult {
 int simulateDCA(const struct Bar* bars, size_t start, size_t end, size_t interval, 
                 double dollarAmount, struct RunResult* simulationResult);
 
+// Like simulateDCA but with one buy at bar start's open; same return codes and zeroed result on failure.
+int buyAndHoldBenchmark(const struct Bar* bars, size_t start, size_t end, 
+                        double buyAmount, struct RunResult* buyAndHoldResult);
+
 
 #endif
