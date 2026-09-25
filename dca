@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Fetch a ticker's daily bars (if not already downloaded today) and run Cadence on them.
+# Usage: ./dca <ticker> <period> <window> <interval> <amount>
+# Example: ./dca SPY 5y 252 21 500     ($500 every 21 trading days over the last 252)
+set -euo pipefail
+cd "$(dirname "$0")"
+
+if [ "$#" -ne 5 ]; then
+    echo "Usage: $0 <ticker> <period> <window> <interval> <amount>" >&2
+    echo "  period: 1y 2y 5y 10y max   window/interval: in trading days (21 ~ 1 month, 252 ~ 1 year)" >&2
+    exit 1
+fi
+
+ticker=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+period=$2
+csv="data/${ticker}_${period}.csv"
+
+# Reuse today's download; otherwise fetch a fresh copy.
+if [ -f "$csv" ] && [ "$(date -r "$csv" +%F)" = "$(date +%F)" ]; then
+    echo "Using cached $csv"
+else
+    python3 tools/fetch_bars.py "$ticker" "$period" "$csv"
+fi
+
+make -s cadence
+./cadence "$csv" "$3" "$4" "$5"
